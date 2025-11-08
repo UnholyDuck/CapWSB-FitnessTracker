@@ -1,4 +1,5 @@
-package pl.wsb.fitnesstracker.statistics.api;
+package pl.wsb.fitnesstracker.healthmetrics;
+
 
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
@@ -8,11 +9,11 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @Entity
-@Table(name = "Statistics")
+@Table(name = "Health_Metrics")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString
-public class Statistics {
+public class healthmetrics {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,13 +23,13 @@ public class Statistics {
     @Column(name = "user_id", nullable = false)
     private long user_id;
 
-    @Column(name = "total_trainings", nullable = false)
-    private int totalTrainings;
+    @Column(name = "date", nullable = false)
+    private date date;
 
-    @Column(name = "total_distance")
-    private double totalDistance;
+    @Column(name = "weight")
+    private int weight;
 
-    @Column(name = "total_calories_burned")
+    @Column(name = "height")
     private int totalCaloriesBurned;
 
     public Statistics(int totalTrainings, double totalDistance, int totalCaloriesBurned) {

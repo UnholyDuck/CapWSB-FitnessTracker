@@ -27,7 +27,7 @@ public class Healthmetrics {
     private User user;
 
     @Column(nullable = false)
-    private LocalDateTime date;
+    private LocalDate date;
 
     @Column(nullable = false)
     private double weight;

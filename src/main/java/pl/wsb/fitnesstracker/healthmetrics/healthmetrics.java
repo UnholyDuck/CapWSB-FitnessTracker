@@ -16,7 +16,7 @@ import pl.wsb.fitnesstracker.user.api.User;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString(exclude = "user")
-public class Healthmetrics {
+public class healthmetrics {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,7 +38,7 @@ public class Healthmetrics {
     @Column(nullable = false)
     private double heartRate;
 
-    public Healthmetrics(LocalDate date, double weight, double height, double heartRate) {
+    public healthmetrics(LocalDate date, double weight, double height, double heartRate) {
         this.date = date;
         this.height = height;
         this.weight = weight;

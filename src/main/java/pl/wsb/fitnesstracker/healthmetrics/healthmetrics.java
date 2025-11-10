@@ -1,40 +1,46 @@
 package pl.wsb.fitnesstracker.healthmetrics;
 
 
-import jakarta.annotation.Nullable;
+import java.time.LocalDateTime;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import pl.wsb.fitnesstracker.user.api.User;
+
 @Entity
 @Table(name = "Health_Metrics")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@ToString
-public class healthmetrics {
+@ToString(exclude = "user")
+public class Healthmetrics {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Nullable
     private Long id;
 
-    @Column(name = "user_id", nullable = false)
-    private long user_id;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
-    @Column(name = "date", nullable = false)
-    private date date;
+    @Column(nullable = false)
+    private LocalDateTime date;
 
-    @Column(name = "weight")
+    @Column(nullable = false)
     private int weight;
+    
+    @Column(nullable = false)
+    private int height;
 
-    @Column(name = "height")
-    private int totalCaloriesBurned;
+    @Column(nullable = false)
+    private int heartRate;
 
-    public Statistics(int totalTrainings, double totalDistance, int totalCaloriesBurned) {
-        this.totalTrainings = totalTrainings;
-        this.totalDistance = totalDistance;
-        this.totalCaloriesBurned = totalCaloriesBurned;
+    public Healthmetrics(LocalDate date, double weight, double height, int heartRate) {
+        this.date = date;
+        this.height = height;
+        this.weight = weight;
+        this.heartRate = heartRate;
     }
 }

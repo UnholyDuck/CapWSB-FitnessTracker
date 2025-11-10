@@ -7,31 +7,35 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import pl.wsb.fitnesstracker.user.api.User;
+
 @Entity
 @Table(name = "Statistics")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@ToString
+@ToString(exclude = "user")
 public class Statistics {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Nullable
     private Long id;
 
-    @Column(name = "user_id", nullable = false)
-    private long user_id;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
-    @Column(name = "total_trainings", nullable = false)
-    private int totalTrainings;
+    @Column(nullable = false)
+    private Integer totalTrainings;
 
-    @Column(name = "total_distance")
-    private double totalDistance;
+    @Column(nullable = false)
+    private Double totalDistance;
 
-    @Column(name = "total_calories_burned")
-    private int totalCaloriesBurned;
+    @Column(nullable = false)
+    private Double totalCaloriesBurned;
 
-    public Statistics(int totalTrainings, double totalDistance, int totalCaloriesBurned) {
+
+
+    public Statistics(int totalTrainings, double totalDistance, double totalCaloriesBurned) {
         this.totalTrainings = totalTrainings;
         this.totalDistance = totalDistance;
         this.totalCaloriesBurned = totalCaloriesBurned;

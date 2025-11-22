@@ -11,7 +11,7 @@ import pl.wsb.fitnesstracker.event.Event;
 
 
 @Entity
-@Table (name = "Trainings")
+@Table (name = "User_Event")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @ToString(exclude = {"user", "event"})

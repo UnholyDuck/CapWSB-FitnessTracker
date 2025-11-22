@@ -43,10 +43,12 @@ public class Training {
 
     public Training(
             final Date startTime,
+            final User user,
             final Date endTime,
             final ActivityType activityType,
             final double distance,
             final double averageSpeed) {
+        this.user = user;
         this.startTime = startTime;
         this.endTime = endTime;
         this.activityType = activityType;

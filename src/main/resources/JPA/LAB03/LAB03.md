@@ -15,8 +15,8 @@ Laboratorium III - Relacje w JPA - stan na 22.11.2025 11:00
    Uwaga 1: ActivityType proszę potraktować jako zwykły Enum Javowy (nie encję JPA).
    Uwaga 2: Tabela UserEvent ma być tabelą, która będzie przechowywać klucze obce do tabel User oraz Event (z
    dodatkowymi atrybutami).
-   Sugeruję zrobić relację @ManyToOne z Userem, oraz @ManyToOne z Eventem.
-
+   Sugeruję zrobić relację @ManyToOne z Userem, oraz @ManyToOne z Eventem.asd
+test
 ![](db_schema.png)
 
 4. Wprowadzone zmiany prześlij na swoje repozytorium. Testy powinny poprawnie się wykonać na platformie

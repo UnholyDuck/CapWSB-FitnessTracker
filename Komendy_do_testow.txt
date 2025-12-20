@@ -1,0 +1,26 @@
+dodawanie usera
+
+curl -i -X POST http://localhost:8080/v1/users \
+  -H "Content-Type: application/json" \
+  -d '{
+    "firstName":"Jan",
+    "lastName":"Kowalski",
+    "birthdate":"1990-01-01",
+    "email":"jan.kowalski@example.com"
+  }'
+
+
+usuwanie usera po id
+
+USER_ID=12
+curl -i -X DELETE "http://localhost:8080/v1/users/$USER_ID" -H "Content-Type: application/json"
+
+
+wyszukiwanie po mailu
+
+curl -i "http://localhost:8080/v1/users/email?email=domain" 
+
+
+wyszukiwanie starszych niz
+
+curl -i "http://localhost:8080/v1/users/older/2024-08-10"

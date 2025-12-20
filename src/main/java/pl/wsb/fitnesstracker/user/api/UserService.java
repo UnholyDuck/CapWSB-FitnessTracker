@@ -14,4 +14,27 @@ public interface UserService {
      */
     User createUser(User user);
 
+    /**
+     * Deletes a user by its id.
+     *
+     * @param userId id of the user to delete
+     */
+    void deleteUser(Long userId);
+
+    /**
+     * Find users whose email contains the given fragment (case-insensitive).
+     *
+     * @param fragment fragment to search inside email
+     * @return list of matching users
+     */
+    java.util.List<User> findUsersByEmailFragment(String fragment);
+
+    /**
+     * Find users older than the provided date (birthdate before the given date).
+     *
+     * @param date exclusive upper bound for birthdate
+     * @return list of users whose birthdate is before {@code date}
+     */
+    java.util.List<User> findUsersOlderThan(java.time.LocalDate date);
+
 }

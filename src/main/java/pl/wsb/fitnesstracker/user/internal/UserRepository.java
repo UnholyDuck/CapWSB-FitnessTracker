@@ -20,5 +20,13 @@ interface UserRepository extends JpaRepository<User, Long> {
                 .findFirst();
     }
 
+    /**
+     * Spring Data derived query: find users whose email contains the given fragment (case-insensitive).
+     *
+     * @param fragment email fragment
+     * @return list of matching users
+     */
+    java.util.List<User> findByEmailContainingIgnoreCase(String fragment);
+
 
 }

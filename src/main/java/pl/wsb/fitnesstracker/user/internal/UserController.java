@@ -13,6 +13,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.format.annotation.DateTimeFormat;
 import pl.wsb.fitnesstracker.user.api.UserDto;
 import pl.wsb.fitnesstracker.user.api.User;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,6 +24,7 @@ import java.util.List;
  * UserController is responsible for handling HTTP requests related to user operations.
  * It provides endpoints for retrieving and creating users.
  */
+
 @RestController
 @RequestMapping("/v1/users")
 @RequiredArgsConstructor
@@ -30,6 +34,13 @@ class UserController {
 
     private final UserMapper userMapper;
 
+
+        /**
+     * GET /v1/users
+     * Returns a list of all users.
+     *
+     * @return list of {@link UserDto} representing all users
+     */
         @GetMapping
     public List<UserDto> getAllUsers() {
         return userService.findAllUsers()
@@ -38,6 +49,14 @@ class UserController {
                 .toList();
     }
 
+    /**
+     * GET /v1/users/{id}
+     * Retrieve a user by its identifier.
+     *
+     * @param id user id path variable
+     * @return {@link UserDto} of the requested user
+     * @throws IllegalArgumentException when user with given id does not exist
+     */
          @GetMapping("/{id}")
     public UserDto getUserById(@PathVariable Long id) {
         return userService.getUser(id)
@@ -45,12 +64,87 @@ class UserController {
                 .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + id));
     }
 
+
+        /**
+     * GET /v1/users/email/{email}
+     * Retrieve a user by their email address.
+     *
+     * @param email user email path variable
+     * @return {@link UserDto} of the requested user
+     * @throws IllegalArgumentException when no user with the given email exists
+     */
         @GetMapping("/email/{email}")
 public UserDto getUserByEmail(@PathVariable String email) {
     return userService.getUserByEmail(email)
             .map(userMapper::toDto)
             .orElseThrow(() -> new IllegalArgumentException("User not found with email: " + email));
 }
+
+    /**
+     * GET /v1/users/email?email=fragment
+     * Search users by email fragment (case-insensitive) and return only id and email.
+     *
+     * @param email fragment to search for in email addresses
+     * @return list of {@link pl.wsb.fitnesstracker.user.api.UserEmailDto}
+     */
+    @GetMapping(value = "/email", params = "email")
+    public java.util.List<pl.wsb.fitnesstracker.user.api.UserEmailDto> searchUsersByEmail(@RequestParam("email") final String email) {
+        return userService.findUsersByEmailFragment(email)
+                .stream()
+                .map(userMapper::toEmailDto)
+                .toList();
+    }
+
+    /**
+     * POST /v1/users
+     * Create a new user from provided {@link UserDto} payload.
+     * Only public fields from the payload are used; any provided id is ignored.
+     *
+     * @param userDto request body with user data
+     * @return created {@link UserDto} containing generated id
+     */
+    @PostMapping
+    public UserDto createUser(@RequestBody final UserDto userDto) {
+        final User domainUser = new User(
+                userDto.firstName(),
+                userDto.lastName(),
+                userDto.birthdate(),
+                userDto.email()
+        );
+
+        final User created = userService.createUser(domainUser);
+        return userMapper.toDto(created);
+    }
+
+    /**
+     * DELETE /v1/users/{userId}
+     * Delete the user identified by the given id.
+     * Returns HTTP 204 No Content on success.
+     *
+     * @param userId id of the user to delete
+     */
+    @DeleteMapping("/{userId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteUser(@PathVariable Long userId) {
+        userService.deleteUser(userId);
+    }
+
+    /**
+     * GET /v1/users/older/{time}
+     * Return users older than the given date (birthdate before {@code time}).
+     * Date must be in ISO format (yyyy-MM-dd).
+     *
+     * @param time date used as exclusive upper bound for birthdate
+     * @return list of {@link UserDto} for users older than the provided date
+     */
+    @GetMapping("/older/{time}")
+    public java.util.List<UserDto> getUsersOlderThan(
+            @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) final java.time.LocalDate time) {
+        return userService.findUsersOlderThan(time)
+                .stream()
+                .map(userMapper::toDto)
+                .toList();
+    }
 
 
 

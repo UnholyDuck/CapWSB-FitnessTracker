@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 import pl.wsb.fitnesstracker.user.api.User;
 import pl.wsb.fitnesstracker.user.api.UserDto;
 import pl.wsb.fitnesstracker.user.api.UserEmailDto;
+import pl.wsb.fitnesstracker.user.api.UserSimpleDto;
 
 @Component
 /**
@@ -27,6 +28,13 @@ class UserMapper {
      */
     UserEmailDto toEmailDto(User user) {
         return new UserEmailDto(user.getId(), user.getEmail());
+    }
+
+    /**
+     * Map domain `User` to lightweight `UserSimpleDto` containing only id, firstName and lastName.
+     */
+    UserSimpleDto toSimpleDto(User user) {
+        return new UserSimpleDto(user.getId(), user.getFirstName(), user.getLastName());
     }
 
 }

@@ -111,4 +111,34 @@ class UserServiceImpl implements UserService, UserProvider {
         return userRepository.findAll();
     }
 
+    /**
+     * Updates an existing user with new data.
+     * All provided fields will be updated if they are not null.
+     *
+     * @param userId id of the user to update
+     * @param updatedUser user object with updated data
+     * @return updated user
+     * @throws IllegalArgumentException when user with given id does not exist
+     */
+    @Override
+    public User updateUser(final Long userId, final User updatedUser) {
+        User existingUser = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + userId));
+
+        if (updatedUser.getFirstName() != null) {
+            existingUser.setFirstName(updatedUser.getFirstName());
+        }
+        if (updatedUser.getLastName() != null) {
+            existingUser.setLastName(updatedUser.getLastName());
+        }
+        if (updatedUser.getBirthdate() != null) {
+            existingUser.setBirthdate(updatedUser.getBirthdate());
+        }
+        if (updatedUser.getEmail() != null) {
+            existingUser.setEmail(updatedUser.getEmail());
+        }
+
+        return userRepository.save(existingUser);
+    }
+
 }

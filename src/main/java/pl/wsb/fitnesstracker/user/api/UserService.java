@@ -37,4 +37,13 @@ public interface UserService {
      */
     java.util.List<User> findUsersOlderThan(java.time.LocalDate date);
 
+    /**
+     * Updates an existing user with new data.
+     *
+     * @param userId id of the user to update
+     * @param user user object with updated data
+     * @return updated user
+     */
+    User updateUser(Long userId, User user);
+
 }

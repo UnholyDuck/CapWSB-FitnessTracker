@@ -1,4 +1,23 @@
-dodawanie usera
+========== LISTA WSZYSTKICH UŻYTKOWNIKÓW ==========
+
+curl -i -X GET http://localhost:8080/v1/users \
+  -H "Content-Type: application/json"
+
+
+========== LISTA UPROSZCZONA (TYLKO IMIĘ I NAZWISKO) ==========
+
+curl -i -X GET http://localhost:8080/v1/users/simple \
+  -H "Content-Type: application/json"
+
+
+========== POBRANIE UŻYTKOWNIKA PO ID ==========
+
+USER_ID=1
+curl -i -X GET "http://localhost:8080/v1/users/$USER_ID" \
+  -H "Content-Type: application/json"
+
+
+========== DODAWANIE NOWEGO UŻYTKOWNIKA ==========
 
 curl -i -X POST http://localhost:8080/v1/users \
   -H "Content-Type: application/json" \
@@ -10,17 +29,157 @@ curl -i -X POST http://localhost:8080/v1/users \
   }'
 
 
-usuwanie usera po id
+========== AKTUALIZACJA UŻYTKOWNIKA ==========
 
-USER_ID=12
-curl -i -X DELETE "http://localhost:8080/v1/users/$USER_ID" -H "Content-Type: application/json"
+USER_ID=1
+curl -i -X PUT "http://localhost:8080/v1/users/$USER_ID" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "firstName":"Janusz",
+    "lastName":"Kowalski",
+    "birthdate":"1990-01-01",
+    "email":"janusz.kowalski@example.com"
+  }'
 
 
-wyszukiwanie po mailu
+========== USUWANIE UŻYTKOWNIKA PO ID ==========
 
-curl -i "http://localhost:8080/v1/users/email?email=domain" 
+USER_ID=1
+curl -i -X DELETE "http://localhost:8080/v1/users/$USER_ID" \
+  -H "Content-Type: application/json"
 
 
-wyszukiwanie starszych niz
+========== WYSZUKIWANIE PO E-MAILU (FRAGMENT) ==========
 
-curl -i "http://localhost:8080/v1/users/older/2024-08-10"
+curl -i -X GET "http://localhost:8080/v1/users/email?email=domain" \
+  -H "Content-Type: application/json"
+
+
+========== WYSZUKIWANIE UŻYTKOWNIKÓW STARSZYCH NIŻ DATA ==========
+
+curl -i -X GET "http://localhost:8080/v1/users/older/2024-08-10" \
+  -H "Content-Type: application/json"
+
+
+==================== LAB05 - TRAINING API ====================
+
+========== POBRANIE WSZYSTKICH TRENINGÓW ==========
+
+curl -i -X GET http://localhost:8080/v1/trainings \
+  -H "Content-Type: application/json"
+
+
+========== POBRANIE TRENINGÓW DLA KONKRETNEGO UŻYTKOWNIKA ==========
+
+USER_ID=1
+curl -i -X GET "http://localhost:8080/v1/trainings/$USER_ID" \
+  -H "Content-Type: application/json"
+
+
+========== POBRANIE TRENINGÓW DLA UŻYTKOWNIKA 2 ==========
+
+curl -i -X GET "http://localhost:8080/v1/trainings/2" \
+  -H "Content-Type: application/json"
+
+==================== LAB06 - TRAINING REPORTS (SCHEDULED TASKS) ====================
+
+========== POBRANIE WSZYSTKICH RAPORTÓW TYGODNIOWYCH ==========
+
+curl -i -X GET http://localhost:8080/v1/reports/trainings/weekly \
+  -H "Content-Type: application/json"
+
+
+========== POBRANIE RAPORTU TYGODNIOWEGO DLA KONKRETNEGO UŻYTKOWNIKA ==========
+
+USER_ID=1
+curl -i -X GET "http://localhost:8080/v1/reports/trainings/weekly/$USER_ID" \
+  -H "Content-Type: application/json"
+
+
+========== POBRANIE RAPORTU TYGODNIOWEGO DLA UŻYTKOWNIKA 2 ==========
+
+curl -i -X GET "http://localhost:8080/v1/reports/trainings/weekly/2" \
+  -H "Content-Type: application/json"
+
+
+========== POBRANIE RAPORTU TYGODNIOWEGO DLA UŻYTKOWNIKA 5 ==========
+
+curl -i -X GET "http://localhost:8080/v1/reports/trainings/weekly/5" \
+  -H "Content-Type: application/json"
+
+
+==================== LAB06 - SCHEDULED TASKS (CO 20 SEKUND) ====================
+
+INSTRUKCJA: Jak zobaczyć automatyczną generację raportów co 20 sekund?
+
+1. KOMPILACJA I BUILD:
+   cd /Users/student/seba/CapWSB-FitnessTracker
+   export PATH="/tmp/apache-maven-3.9.6/bin:$PATH"
+   mvn clean package -DskipTests
+
+2. URUCHOMIENIE APLIKACJI (z logami w tle):
+   # Zatrzymaj starą aplikację (jeśli jest)
+   pkill -f "java -jar.*FitnessTracker"
+   sleep 2
+
+   # Uruchom nową z logami zapisywanymi do pliku
+   java -jar target/CapWSB-FitnessTracker-1.2.0-107154-SNAPSHOT.jar > /tmp/app.log 2>&1 &
+   sleep 8
+
+3. OBSERWACJA LOGÓW (METODA 1 - LIVE):
+   tail -f /tmp/app.log | grep -E "ROZPOCZĘCIE|USER:|KONIEC"
+
+4. OBSERWACJA LOGÓW (METODA 2 - CO 25 SEKUND):
+   # Terminal 1: Uruchom aplikację
+   java -jar target/CapWSB-FitnessTracker-1.2.0-107154-SNAPSHOT.jar
+
+   # Terminal 2: Poczekaj 20 sekund i sprawdź
+   sleep 20 && tail -50 /tmp/app.log | grep "USER:"
+
+5. OBSERWACJA LOGÓW (METODA 3 - CYKLICZNIE):
+   while true; do echo "=== $(date) ==="; tail -20 /tmp/app.log | grep -A 1 "ROZPOCZĘCIE"; sleep 25; done
+
+6. AUTOMATYCZNE TESTOWANIE (ALL-IN-ONE SKRYPT):
+   #!/bin/bash
+   echo "Zatrzymanie starej aplikacji..."
+   pkill -f "java -jar.*FitnessTracker"
+   sleep 2
+
+   echo "Build projektu..."
+   export PATH="/tmp/apache-maven-3.9.6/bin:$PATH"
+   mvn clean package -q -DskipTests
+
+   echo "Uruchomienie aplikacji..."
+   java -jar target/CapWSB-FitnessTracker-1.2.0-107154-SNAPSHOT.jar > /tmp/app.log 2>&1 &
+   APP_PID=$!
+   sleep 8
+
+   echo "Obserwacja raportów przez 60 sekund (3 razy co 20 sekund)..."
+   for i in {1..3}; do
+     echo ""
+     echo "=== RAPORT $i ($(date)) ==="
+     tail -30 /tmp/app.log | grep -A 15 "ROZPOCZĘCIE" | head -20
+     if [ $i -lt 3 ]; then
+       echo "Czekanie 25 sekund na następny raport..."
+       sleep 25
+     fi
+   done
+
+   echo ""
+   echo "Gotowe! Raport generowany co 20 sekund przez TrainingReportScheduler"
+
+========== ZMIANY CRON EXPRESSION (JEŚLI CHCESZ INNY SCHEDULE) ==========
+
+PLIK: src/main/java/pl/wsb/fitnesstracker/statistics/internal/TrainingReportScheduler.java
+LINIA: @Scheduled(cron = "0/20 * * * * ?")
+
+INNE WARIANTY:
+- Co 10 sekund:       @Scheduled(cron = "0/10 * * * * ?")
+- Co 30 sekund:       @Scheduled(cron = "0/30 * * * * ?")
+- Co minutę:          @Scheduled(cron = "0 * * * * ?")
+- Co 5 minut:         @Scheduled(cron = "0 */5 * * * ?")
+- Co 15 minut:        @Scheduled(cron = "0 */15 * * * ?")
+- Codziennie o 07:00: @Scheduled(cron = "0 0 7 * * ?")
+- Poniedziałek 07:00: @Scheduled(cron = "0 0 7 ? * MON")
+
+PO KAŻDEJ ZMIANIE: mvn clean package -DskipTests && restart aplikacji

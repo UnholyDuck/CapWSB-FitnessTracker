@@ -50,6 +50,20 @@ class UserController {
     }
 
     /**
+     * GET /v1/users/simple
+     * Returns a list of all users with basic information (id, firstName, lastName).
+     *
+     * @return list of {@link UserSimpleDto} with basic user information
+     */
+    @GetMapping("/simple")
+    public List<pl.wsb.fitnesstracker.user.api.UserSimpleDto> getAllUsersSimple() {
+        return userService.findAllUsers()
+                .stream()
+                .map(userMapper::toSimpleDto)
+                .toList();
+    }
+
+    /**
      * GET /v1/users/{id}
      * Retrieve a user by its identifier.
      *
@@ -155,6 +169,28 @@ public UserDto getUserByEmail(@PathVariable String email) {
 
 
 
-}
     
 
+
+    /**
+     * PUT /v1/users/{userId}
+     * Update an existing user with the provided data.
+     *
+     * @param userId id of the user to update
+     * @param userDto request body with updated user data
+     * @return updated {@link UserDto}
+     */
+    @PutMapping("/{userId}")
+    public UserDto updateUser(@PathVariable Long userId, @RequestBody final UserDto userDto) {
+        final User domainUser = new User(
+                userDto.firstName(),
+                userDto.lastName(),
+                userDto.birthdate(),
+                userDto.email()
+        );
+
+        final User updated = userService.updateUser(userId, domainUser);
+        return userMapper.toDto(updated);
+    }
+
+}
